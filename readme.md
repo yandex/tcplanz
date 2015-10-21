@@ -1,47 +1,50 @@
 #### What is this for ####
 This project allows to get web server performance metric from traffic TCPDump. 
-This allows to measure up metric like 'delivery time' which are usually not available in runtime and have second opinion about other metrics like server latency.
+This allows to measure up metric like **html delivery time** which are usually not available in runtime and have second opinion about other metrics like **server latency**.
 
 
 #### Installation ####
 This is not meant to be used directy on frontend, because it could consume lot of memory and CPU parsing pcap files.
 Please install on development server or workstation
 
-Before installation you need python (pypy is preferrable because it faster on task like this)
-Only dependance is dpkt (python tcpdump parsing library) see https://dpkt.readthedocs.org
+Before installation you need python (pypy is preferrable because it faster on task like this).
+Only other dependance is dpkt (python tcpdump parsing library) see https://dpkt.readthedocs.org
 
 #### How to get data ####
 
 You should dump on frontend/reverse proxy/balancer i.e. something which holds tcp connections directly to users
 
 Simple way:
-   sudo tcpdump -w data.pcap port 80
+   **sudo tcpdump -w data.pcap port 80**
 
 Production way:
-   use nice -10 to give additional priority to tcpdump
-   use -B option for largest buffer available on your system. Sometimes tcpdump drop some packets because disk is busy
-   use -C option to split file by files of reasonable size (1-10Gb) this is easier for copying/etc
-   use -z to compress splitted files after writing, note: nice/ionice gzip to prevent it from preemping tcpdump 
-   dump only traffic you need, i.e. use filters "port 80 or port 8080"
-   if you debugging frontend itself consider dumping both traffic to user and backend. You may find something interesting comparing timings.
+   * use nice -10 to give additional priority to tcpdump
+   * use -B option for largest buffer available on your system. Sometimes tcpdump drop some packets because disk is busy
+   * use -C option to split file by files of reasonable size (1-10Gb) this is easier for copying/etc
+   * use -z to compress splitted files after writing, note: nice/ionice gzip to prevent it from preemping tcpdump 
+   * dump only traffic you need, i.e. use filters "port 80 or port 8080"
+   * if you debugging frontend itself consider dumping both traffic to user and backend. You may find something interesting comparing timings.
 
 
 #### Parsing ####
+```
    parse-pcap.py <outdir> (parse|split|sparse) <input files shoild have extensions .pcap or .pcap.gz> 
 
    outdir - directory where http.txt and debug.txt will be created.
 
-   parse - just parse files. will use lot of memory because every active session is kept in memory until closed. 
-           and tcpdump has a lot of sessions which never ends. Session which crossed tcpdump files will be preserved.
-           order of files is important, i.e. better to have timestamp or number inside file name.
-   split - extract tcp sessions from pcap files split it to several new files. Each session will be only in one file.
-           order of packets will be changed. I.e. session 1 - packets 1..N, session 2 packets N+1..M, etc.
-           timestamps will be preserved. 
+   parse  - just parse files. will use lot of memory because every active session is kept in memory until closed. 
+            and tcpdump has a lot of sessions which never ends. Session which crossed tcpdump files will be preserved.
+            order of files is important, i.e. better to have timestamp or number inside file name.
+   split  - extract tcp sessions from pcap files split it to several new files. Each session will be only in one file.
+            order of packets will be changed. I.e. session 1 - packets 1..N, session 2 packets N+1..M, etc.
+            timestamps will be preserved. 
    sparse - parse splited files. Actually it is same as just run programs on all files one by one.
             sessions across files will be separated. 
+```
 
 Examples: 
 
+```
      parse-pcap.py out parse tcpdump.pcap.gz 
      (test example)
 
@@ -56,7 +59,7 @@ Examples:
 
      In yandex we have used map/reduce version of this program, it were using proprietary map/ruduce implementation, 
      so it useless outside. But I waht to port in to Hadoop, if you have lot of data and test stand ask me)
-
+```
 
 After parsing there will be files http.txt and debug.txt 
 
@@ -65,6 +68,7 @@ After parsing there will be files http.txt and debug.txt
 
 Columns of http.txt are the folowing:
 
+```
 server  
 server_port     
 client  
@@ -126,10 +130,11 @@ server_as               - broken
 server_24mask           - broken
 client_as               - broken 
 client_24mask           - broken
-
+```
 
 #### Intersing thing to calculate yourself ####
-  
+
+``` 
    server_ack_delay = response_start_acked - request_start_time 
    #if server_ack_delay>0 you have network problems (in case of server side dump)
 
@@ -154,6 +159,6 @@ client_24mask           - broken
    #rtt is negate itself if it stable
 
    Also take note you could parse traffic to USER and to BACKEND and compare it. There is lot of intersting statistic here too. You just need to be able to glue request - yandex used reqid for it.
-
+```
 
 
