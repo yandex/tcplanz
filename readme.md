@@ -1,6 +1,32 @@
-First of all you need install dpkt for this to work, see https://dpkt.readthedocs.org
+#### What is this for ####
+This project allows to get web server performance metric from traffic TCPDump. 
+This allows to measure up metric like 'delivery time' which are usually not available in runtime and have second opinion about other metrics like server latency.
 
-Usage:
+
+#### Installation ####
+This is not meant to be used directy on frontend, because it could consume lot of memory and CPU parsing pcap files.
+Please install on development server or workstation
+
+Before installation you need python (pypy is preferrable because it faster on task like this)
+Only dependance is dpkt (python tcpdump parsing library) see https://dpkt.readthedocs.org
+
+#### How to get data ####
+
+You should dump on frontend/reverse proxy/balancer i.e. something which holds tcp connections directly to users
+
+Simple way:
+   sudo tcpdump -w data.pcap port 80
+
+Production way:
+   use nice -10 to give additional priority to tcpdump
+   use -B option for largest buffer available on your system. Sometimes tcpdump drop some packets because disk is busy
+   use -C option to split file by files of reasonable size (1-10Gb) this is easier for copying/etc
+   use -z to compress splitted files after writing, note: nice/ionice gzip to prevent it from preemping tcpdump 
+   dump only traffic you need, i.e. use filters "port 80 or port 8080"
+   if you debugging frontend itself consider dumping both traffic to user and backend. You may find something interesting comparing timings.
+
+
+#### Parsing ####
    parse-pcap.py <outdir> (parse|split|sparse) <input files shoild have extensions .pcap or .pcap.gz> 
 
    outdir - directory where http.txt and debug.txt will be created.
@@ -19,7 +45,6 @@ Examples:
      parse-pcap.py out parse tcpdump.pcap.gz 
      (test example)
 
-
      parse-pcap.py splitted split 100Gb-dump/*.pcap.gz
      parse-pcap.py out sparse splitted/*.pcap.gz 
 
@@ -34,6 +59,9 @@ Examples:
 
 
 After parsing there will be files http.txt and debug.txt 
+
+#### Output format ####
+
 
 Columns of http.txt are the folowing:
 
@@ -100,7 +128,7 @@ client_as               - broken
 client_24mask           - broken
 
 
-Calculate yourself:
+#### Intersing thing to calculate yourself ####
   
    server_ack_delay = response_start_acked - request_start_time 
    #if server_ack_delay>0 you have network problems (in case of server side dump)
