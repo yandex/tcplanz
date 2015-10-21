@@ -1,0 +1,23 @@
+A LOT of code parts was removed from public version, not because they are 'secret' but becuase they are
+unusable/unfinished/broken/dirty written, for example:
+
+1) MapReduce interface.
+   This software were mostly used for parsing very large tcpdumps(several terabytes) in MapReduce environment.
+   Unusable now becuase Yandex MapReduce is proprietary software, not available outside.
+   I always wanted to port it to Hadoop. But I have neither Hadoop installation nor tcpdump large enough.
+   Ask me if you large company and need this feature.
+   
+2) HTTPS decryption.
+   Most traffic is encrypted now but we need to diagnose it too.
+   It is possible to implement with help of client or server we need one of them to write master secret for session to file.
+   To get it from Chrome you need to set environment variable SSLKEYLOGFILE=/path/to/file.txt, to get it from server you 
+   need to patch it.
+   This code was in stage "works on my machine"(tm), was slow, and awfully written. I.e. was never finished.
+   Still hope to finish it sometime, write me if you need it.
+   
+3) Some code chunks, for example R files to make repors and graphs. It never was a product I just used them myself.
+   also they were highly yandex specific, i.e. port numbers were used to determine service, etc.
+
+But nevertheless Yandex released this code with public license too, I removed it not becuase of license limitation, 
+but just to remove unusable junk from the project. This code could be restored if somebody needs them and could 
+provide me with testing environment and data.

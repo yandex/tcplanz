@@ -1,0 +1,7 @@
+To support https parsing or SPDY/HTTP2 parsing we mush be able to handle stack of protocols.
+I.e. in current architecture we always have:
+ HTTP over TCP 
+In real world it could be:
+ HTTP over SPDY over SSL/TLS over TCP/UDP
+I.e. we need to be able to handle abstract records over abstract records.
+I started refactoring to implement this functionality, it was never finished 

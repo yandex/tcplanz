@@ -1,0 +1,4 @@
+# Testcases was removed in open source version, because they have contained real user traffic samples.
+# Althought most of cases were related to some strange TCP attacks and had no real user data Yandex EULA doen't allow to publish it.
+# I should commit some other test cases here(obfuscated or based on my own traffic).
+# If you have some traffic examples which broke the software and you could publish them, please send pull request.
