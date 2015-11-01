@@ -9,6 +9,8 @@ Please install on development server or workstation
 
 Before installation you need python (pypy is preferrable because it faster on task like this).
 Only other dependance is dpkt (python tcpdump parsing library) see https://dpkt.readthedocs.org
+If you use pip to install dpkt please say **pypy -m pip install dpkt** instead of **pip install dpkt**,
+second spell installs dpkt for python not pypy.
 
 #### How to get data ####
 
