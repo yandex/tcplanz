@@ -30,7 +30,7 @@ Production way:
 
 #### Parsing ####
 ```
-   parse-pcap.py <outdir> (parse|split|sparse) <input files shoild have extensions .pcap or .pcap.gz> 
+   decode-pcap.py <outdir> (parse|split|sparse) <input files shoild have extensions .pcap or .pcap.gz> 
 
    outdir - directory where http.txt and debug.txt will be created.
 
@@ -47,11 +47,11 @@ Production way:
 Examples: 
 
 ```
-     parse-pcap.py out parse tcpdump.pcap.gz 
+     decode-pcap.py out parse tcpdump.pcap.gz 
      (test example)
 
-     parse-pcap.py splitted split 100Gb-dump/*.pcap.gz
-     parse-pcap.py out sparse splitted/*.pcap.gz 
+     decode-pcap.py splitted split 100Gb-dump/*.pcap.gz
+     decode-pcap.py out sparse splitted/*.pcap.gz 
 
      (real world example. If you want to parse 100Gb of tcpdump you may need comparable amount of memory for split 
      operation. Comparable means 100Gb if all http sessions is keep-alive and not finished inside file. And small amount of memory if all sessions are short. 
